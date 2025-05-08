@@ -1,5 +1,6 @@
 package main
 
+import "moduloInicial/Aulas/3-fundacao/pacotes/matematica"
 
 type MyNumber int
 
