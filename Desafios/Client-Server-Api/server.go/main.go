@@ -1,20 +1,37 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
+	"moduloInicial/Desafios/Client-Server-Api/server.go/db"
+	"moduloInicial/Desafios/Client-Server-Api/server.go/model"
+	"moduloInicial/Desafios/Client-Server-Api/server.go/repository"
+	"moduloInicial/Desafios/Client-Server-Api/server.go/service"
 	"net/http"
 	"time"
 )
 
 func main() {
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/cotacao", handler)
 	http.ListenAndServe(":8080", nil)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, time.Millisecond*200)
+
+	conn := db.NewDB(db.DBConfig{
+		Driver:     "sqlite",
+		SQLitePath: "./meubanco.db",
+	})
+
+	repo := repository.NewCotacaoRepository(conn)
+
+	defer cancel()
+
 	log.Println("Request Iniciada")
 	defer log.Println("Request finalizada")
 
@@ -61,23 +78,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	case body := <-result:
 		log.Println("Request processada com sucesso")
+
+		var cotacao model.Cotacao
+		if err := json.Unmarshal([]byte(body), &cotacao); err != nil {
+			log.Println("Erro ao fazer unmarshal:", err)
+		}
+
+		svc := service.NewCotacaoService(repo)
+
+		svc.SaveServiceData(cotacao)
 		w.Write([]byte("Resposta da API externa:\n"))
 		w.Write([]byte(body))
 	}
-}
-
-type Cotacao struct {
-	Usdbrl struct {
-		Code       string `json:"code"`
-		Codein     string `json:"codein"`
-		Name       string `json:"name"`
-		High       string `json:"high"`
-		Low        string `json:"low"`
-		VarBid     string `json:"varBid"`
-		PctChange  string `json:"pctChange"`
-		Bid        string `json:"bid"`
-		Ask        string `json:"ask"`
-		Timestamp  string `json:"timestamp"`
-		CreateDate string `json:"create_date"`
-	} `json:"USDBRL"`
 }
