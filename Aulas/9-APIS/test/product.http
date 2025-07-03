@@ -1,0 +1,36 @@
+POST  http://localhost:8080/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTE0MTA4NzksInN1YiI6IjRmMmFiODkzLWVmMWMtNDk0NS04MGJmLTcwMmEyOGYyMDNlZCJ9.SDtCI2EQhU661TRFvDR-vXIfElirXspazxQUGl-Ul0M
+
+{
+  "name": "caneta azul",
+  "price": 1.99
+}
+{
+  "name": "caneta vermelha",
+  "price": 0.99,
+  
+}
+
+
+###
+
+GET http://localhost:8080/products/4e77389a-73e6-401e-a91e-c6d432f1e9ad HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTE0MTA4NzksInN1YiI6IjRmMmFiODkzLWVmMWMtNDk0NS04MGJmLTcwMmEyOGYyMDNlZCJ9.SDtCI2EQhU661TRFvDR-vXIfElirXspazxQUGl-Ul0M
+
+###
+PUT http://localhost:8080/products/4e77389a-73e6-401e-a91e-c6d432f1e9ad
+Content-Type: application/json
+
+{
+  "name":"Product Updated",
+  "price":99.99
+}
+
+###
+DELETE http://localhost:8080/products/4e77389a-73e6-401e-a91e-c6d432f1e9ad HTTP/1.1
+
+###
+GET http://localhost:8080/products?page=1&limit=2 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTE0MTA5NTcsInN1YiI6IjRmMmFiODkzLWVmMWMtNDk0NS04MGJmLTcwMmEyOGYyMDNlZCJ9.dRQmP669vckYtf--8NBSU2ht4fZgyEAvlEqVa9fc0Z4
