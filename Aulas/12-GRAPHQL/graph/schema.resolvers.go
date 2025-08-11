@@ -6,10 +6,39 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Frank-Macedo/12-graphql/graph/model"
 )
+
+// Courses is the resolver for the courses field.
+func (r *categoryResolver) Courses(ctx context.Context, obj *model.Category) ([]*model.Course, error) {
+	courses, err := r.CourseDb.FindByCategoryId(obj.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var coursesModels []*model.Course
+
+	for _, course := range courses {
+		coursesModels = append(coursesModels, &model.Course{
+			ID:          course.Id,
+			Name:        course.Name,
+			Description: &course.Description,
+		})
+	}
+	return coursesModels, nil
+}
+
+// Category is the resolver for the category field.
+func (r *courseResolver) Category(ctx context.Context, obj *model.Course) (*model.Category, error) {
+	c, err := r.CategoryDB.FindByCourseId(obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &model.Category{ID: c.ID, Name: c.Name, Description: &c.Description}, err
+
+}
 
 // CreateCategory is the resolver for the createCategory field.
 func (r *mutationResolver) CreateCategory(ctx context.Context, input model.NewCategory) (*model.Category, error) {
@@ -39,7 +68,6 @@ func (r *mutationResolver) CreateCourse(ctx context.Context, input model.NewCour
 		Name:        course.Name,
 		Description: &course.Description,
 	}, nil
-
 }
 
 // Categories is the resolver for the categories field.
@@ -61,8 +89,26 @@ func (r *queryResolver) Categories(ctx context.Context) ([]*model.Category, erro
 
 // Courses is the resolver for the courses field.
 func (r *queryResolver) Courses(ctx context.Context) ([]*model.Course, error) {
-	panic(fmt.Errorf("not implemented: Courses - courses"))
+	courses, err := r.CourseDb.FindAll()
+
+	if err != nil {
+		return nil, err
+	}
+
+	var coursesModels []*model.Course
+
+	for _, course := range courses {
+		coursesModels = append(coursesModels, &model.Course{ID: course.Id, Name: course.Name, Description: &course.Description})
+	}
+
+	return coursesModels, nil
 }
+
+// Category returns CategoryResolver implementation.
+func (r *Resolver) Category() CategoryResolver { return &categoryResolver{r} }
+
+// Course returns CourseResolver implementation.
+func (r *Resolver) Course() CourseResolver { return &courseResolver{r} }
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
@@ -70,5 +116,7 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+type categoryResolver struct{ *Resolver }
+type courseResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

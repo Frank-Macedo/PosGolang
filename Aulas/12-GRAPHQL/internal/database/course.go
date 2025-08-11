@@ -50,3 +50,24 @@ func (c *Course) FindAll() ([]Course, error) {
 	return courses, nil
 
 }
+
+func (c *Course) FindByCategoryId(categoryId string) ([]Course, error) {
+
+	rows, err := c.db.Query("select * from courses where categoryId = $1", categoryId)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	courses := []Course{}
+
+	for rows.Next() {
+		var id, name, description, categoryID string
+		if err := rows.Scan(&id, &name, &description, &categoryID); err != nil {
+			return nil, err
+		}
+		courses = append(courses, Course{Id: id, Name: name, Description: description, CategoryId: categoryID})
+	}
+	return courses, nil
+
+}
