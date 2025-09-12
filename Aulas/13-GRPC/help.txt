@@ -1,0 +1,2 @@
+protoc --go_out=. --go-grpc_out=. proto/course_category.proto
+docker run --rm -it --network=host -v "$(pwd):/mount:ro"   ghcr.io/ktr0731/evans:latest   --path /mount   --proto course_category.proto   --host 127.0.0.1   --port 50051   repl
