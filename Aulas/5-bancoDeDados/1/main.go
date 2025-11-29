@@ -19,6 +19,7 @@ func NewProduct(name string, price float64) *Product {
 }
 
 func main() {
+
 	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/goexpert")
 
 	if err != nil {
